@@ -23,6 +23,7 @@ done
 
 ## set if conditions
 [[ ${input_type} == 'T1' ]] && output_type='t1' || output_type='t2'
+[[ ${input_type} == 'T2' ]] && l4='--nononlinreg' || l4=''
 [[ ${reorient} == false ]] && l1='--noreorient' || l1=''
 [[ ${crop} == false ]] && l2='--nocrop' || l2=''
 [[ ${bias} == false ]] && l3='--nobias'
@@ -36,6 +37,7 @@ if [ ! -f ./${tempdir}.anat/${input_type}_to_MNI_nonlin.nii.gz ]; then
 		${l1} \
 		${l2} \
 		${l3} \
+		${l4} \
 		${l6} \
 		${l7} \
 		-t ${input_type} \
