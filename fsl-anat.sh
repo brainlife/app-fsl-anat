@@ -50,7 +50,12 @@ fi
 aff2rigid ./${tempdir}.anat/${input_type}_to_MNI_lin.mat acpcmatrix
 
 ## applying rigid transform to bias corrected image
-applywarp --rel --interp=spline -i ./${tempdir}.anat/${input_type}_biascorr.nii.gz -r ${FSLDIR}/data/standard/MNI152_${input_type}_1mm --premat=acpcmatrix -o ./${acpcdir}/${output_type}.nii.gz
+applywarp --rel \
+	--interp=spline \
+	-i ./${tempdir}.anat/${input_type}_biascorr.nii.gz \
+	-r ${FSLDIR}/data/standard/MNI152_${input_type}_1mm \
+	--premat=acpcmatrix \
+	-o ./${acpcdir}/${output_type}.nii.gz
 
 ## outputs
 # moving warp fields from non-linear warp to warp directory
