@@ -4,5 +4,5 @@
 #PBS -l vmem=32gb
 #PBS -V
 
-time singularity exec -e docker://brainlife/fsl:5.0.11 ./fsl-anat.sh
+time singularity exec -e docker://brainlife/fsl:latest ./fsl-anat.sh
 
