@@ -49,7 +49,7 @@ fi
 # creating a rigid transform from linear alignment to MNI
 aff2rigid ./${tempdir}.anat/${input_type}_to_MNI_lin.mat acpcmatrix
 
-## applying rigid transform to bias corrected image
+# applying rigid transform to bias corrected image
 applywarp --rel \
 	--interp=spline \
 	-i ./${tempdir}.anat/${input_type}_biascorr.nii.gz \
