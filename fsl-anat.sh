@@ -1,8 +1,5 @@
 #!/bin/bash
 
-set -x
-set -e
-
 # input configs
 input=`jq -r '.input' config.json`
 TEMPLATE=`jq -r '.template' config.json`
@@ -27,8 +24,8 @@ done
 
 ## set if conditions
 [[ ${input_type} == 'T1' ]] && output_type='t1' || output_type='t2'
-[[ ${reorient} == false ]] && l1='--noreorient' || l1=''
-[[ ${crop} == false ]] && l2='--nocrop' || l2=''
+[[ ${reorient} ==  true ]] && fslreorient2std ${input} ./t1_reorient && input=t1_reorient
+[[  ${crop} == true ]] && robustfov -i ${input} -r t1_crop && input=t1_crop
 [[ ${bias} == false ]] && l3='--nobias'
 [[ ${seg} == false ]] && l6='--noseg' || l6=''
 [[ ${subcortseg} == false ]] && l7='--nosubcortseg' || l7=''
@@ -57,8 +54,8 @@ sed -i "/--refmask=/s/$/${TEMPLATE}_mask_dil1/" ./fnirt_config.cnf
 ## run fsl_anat
 echo "running fsl_anat"
 [ ! -f ${tempdir}.anat/${input_type}_biascorr.nii.gz ] && fsl_anat -i ${input} \
-	${l1} \
-	${l2} \
+	--noreorient \
+	--nocrop \
 	${l3} \
 	--noreg \
 	--nononlinreg \
@@ -105,7 +102,7 @@ echo  "compute inverse warp"
 ## acpc align T1
 echo  "acpc alignment"
 # creating a rigid transform from linear alignment to MNI
-[ ! -f acpcmatrix ] && aff2rigid ./${input_type}_to_standard_lin.mat acpcmatrix
+[ ! -f acpcmatrix ] && python ./aff2rigid.py ./${input_type}_to_standard_lin.mat acpcmatrix
 
 # applying rigid transform to bias corrected image
 [ ! -f ./${acpcdir}/${output_type}.nii.gz ] && applywarp --rel \
