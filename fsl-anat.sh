@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -x
+set -e
+
 # input configs
 input=`jq -r '.input' config.json`
 TEMPLATE=`jq -r '.template' config.json`
