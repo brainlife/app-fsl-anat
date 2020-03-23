@@ -38,11 +38,29 @@ nihpd_asym*)
     [ $input_type == "T2" ] && template=templates/${template}_t2w.nii
     template_mask=templates/${template}_mask.nii
     ;;
-*)
-    space="MNI152NLin6Asym"
+MNI152NLin6Asym-1mm*)
+    space="MNI152NLin6Asym-1mm"
     [ $input_type == "T1" ] && template=templates/MNI152_T1_1mm.nii.gz
     [ $input_type == "T2" ] && template=templates/MNI152_T2_1mm.nii.gz
     template_mask=templates/MNI152_1mm_brain_mask.nii.gz
+    ;;
+MNI152NLin6Asym-0.7mm*)
+    space="MNI152NLin6Asym-0.7mm"
+    [ $input_type == "T1" ] && template=templates/MNI152_T1_0.7mm.nii.gz
+    [ $input_type == "T2" ] && template=templates/MNI152_T2_0.7mm.nii.gz
+    template_mask=templates/MNI152_T1_0.7mm_brain_mask.nii.gz
+    ;;
+MNI152NLin6Asym-0.8mm*)
+    space="MNI152NLin6Asym-0.8mm"
+    [ $input_type == "T1" ] && template=templates/MNI152_T1_0.8mm.nii.gz
+    [ $input_type == "T2" ] && template=templates/MNI152_T2_0.8mm.nii.gz
+    template_mask=templates/MNI152_T1_0.8mm_brain_mask.nii.gz
+    ;;
+MNI152NLin6Asym-2mm*)
+    space="MNI152NLin6Asym-0.7mm"
+    [ $input_type == "T1" ] && template=templates/MNI152_T1_2mm.nii.gz
+    [ $input_type == "T2" ] && template=templates/MNI152_T2_2mm.nii.gz
+    template_mask=templates/MNI152_T1_2mm_brain_mask_dil.nii.gz
     ;;
 esac
 
@@ -71,38 +89,17 @@ echo  "flirt linear alignment"
 [ ! -f ${input_type}_to_standard_lin ] && flirt -interp spline \
 	-dof 12 -in ./${tempdir}.anat/${input_type}_biascorr \
 	-ref ${template} \
-	-dof 12 \
 	-omat ${input_type}_to_standard_lin.mat \
-	-out ${input_type}_to_standard_lin
-
-# dilate and fill holes in template brain mask
-[ ! -f ${TEMPLATE}_mask_dil1 ] && fslmaths ${template_mask} -fillh -dilF ${TEMPLATE}_mask_dil1
-
-# fnirt
-echo  "fnirt nonlinear alignment"
-[ ! -f ${input_type}_to_standard_nonlin ] && fnirt --in=./${tempdir}.anat/${input_type}_biascorr \
-	--ref=${template} \
-	--fout=${input_type}_to_standard_nonlin_field \
-	--jout=${input_type}_to_standard_nonlin_jac \
-	--iout=${input_type}_to_standard_nonlin \
-	--logout=${input_type}_to_standard_nonlin.txt \
-	--cout=${input_type}_to_standard_nonlin_coeff \
-	--config=./fnirt_config.cnf \
-	--aff=${input_type}_to_standard_lin.mat \
-	--refmask=${TEMPLATE}_mask_dil1.nii.gz
-
-echo  "compute inverse warp"
-[ ! -f standard_to_${input_type}_nonlin_field ] && invwarp --ref=./${tempdir}.anat/${input_type}_biascorr -w ${input_type}_to_standard_nonlin_coeff -o standard_to_${input_type}_nonlin_field
-
-## these are functions used to generate brainmask of T1, but not sure if necessary. leaving here for now
-#/opt/fsl-5.0.11/bin/applywarp --interp=nn --in=${template}_brain_mask.nii.gz --ref=./${tempdir}.anat/${input_type}_biascorr -w standard_to_${input_type}_nonlin_field -o ${input_type}_biascorr_brain_mask
-#/opt/fsl-5.0.11/bin/fslmaths T1_biascorr_brain_mask -fillh T1_biascorr_brain_mask
-#/opt/fsl-5.0.11/bin/fslmaths T1_biascorr -mas T1_biascorr_brain_mask T1_biascorr_brain
+	-out ${input_type}_to_standard_lin \
+	-searchrx -30 30 -searchry -30 30 -searchrz -30 30
 
 ## acpc align T1
 echo  "acpc alignment"
 # creating a rigid transform from linear alignment to MNI
-[ ! -f acpcmatrix ] && python ./aff2rigid.py ./${input_type}_to_standard_lin.mat acpcmatrix
+[ ! -f acpcmatrix ] && python \
+	./aff2rigid.py \
+	./${input_type}_to_standard_lin.mat \
+	acpcmatrix
 
 # applying rigid transform to bias corrected image
 [ ! -f ./${acpcdir}/${output_type}.nii.gz ] && applywarp --rel \
@@ -111,6 +108,56 @@ echo  "acpc alignment"
 	-r ${template} \
 	--premat=acpcmatrix \
 	-o ./${acpcdir}/${output_type}.nii.gz
+
+# dilate and fill holes in template brain mask
+[ ! -f ${TEMPLATE}_mask_dil1 ] && fslmaths \
+	${template_mask} \
+	-fillh \
+	-dilF ${TEMPLATE}_mask_dil1
+
+# flirt again
+echo "acpc to MNI linear flirt"
+[ ! -f acpc_to_standard_lin.mat ] && flirt \
+	-interp spline \
+	-dof 12 \
+	-in ./${acpcdir}/${output_type}.nii.gz \
+	-ref ${template} \
+	-omat acpc_to_standard_lin.mat \
+	-out acpc_to_standard_lin
+
+# fnirt
+echo  "fnirt nonlinear alignment"
+[ ! -f ${input_type}_to_standard_nonlin ] && fnirt \
+	--in=./${acpcdir}/${output_type}.nii.gz \
+	--ref=${template} \
+	--fout=${input_type}_to_standard_nonlin_field \
+	--jout=${input_type}_to_standard_nonlin_jac \
+	--iout=${input_type}_to_standard_nonlin \
+	--logout=${input_type}_to_standard_nonlin.txt \
+	--cout=${input_type}_to_standard_nonlin_coeff \
+	--config=./fnirt_config.cnf \
+	--aff=acpc_to_standard_lin.mat \
+	--refmask=${TEMPLATE}_mask_dil1.nii.gz
+
+echo "apply fnirt warp"
+[ ! -f ${standard}/${output_type}.nii.gz ] && applywarp \
+	--rel \
+	--interp=spline \
+	-i ./${acpcdir}/${output_type}.nii.gz \
+	-r ${template} \
+	-w ${input_type}_to_standard_nonlin_field \
+	-o ${standard}/${output_type}.nii.gz
+
+echo  "compute inverse warp"
+[ ! -f standard_to_${input_type}_nonlin_field ] && invwarp \
+	-r ${template} \
+	-w ${input_type}_to_standard_nonlin_coeff \
+	-o standard_to_${input_type}_nonlin_field
+
+## these are functions used to generate brainmask of T1, but not sure if necessary. leaving here for now
+#/opt/fsl-5.0.11/bin/applywarp --interp=nn --in=${template}_brain_mask.nii.gz --ref=./${tempdir}.anat/${input_type}_biascorr -w standard_to_${input_type}_nonlin_field -o ${input_type}_biascorr_brain_mask
+#/opt/fsl-5.0.11/bin/fslmaths T1_biascorr_brain_mask -fillh T1_biascorr_brain_mask
+#/opt/fsl-5.0.11/bin/fslmaths T1_biascorr -mas T1_biascorr_brain_mask T1_biascorr_brain
 
 ## outputs
 echo "cleanup"
@@ -123,7 +170,7 @@ echo "cleanup"
 [ ! -f ${biasdir}/${output_type}.nii.gz ] && mv ./${tempdir}.anat/${input_type}_biascorr.nii.gz ./${biasdir}/${output_type}.nii.gz
 
 # standard T1
-[ ! -f ${standard}/${output_type}.nii.gz ] && mv ${input_type}_to_standard_nonlin.nii.gz ./${standard}/${output_type}.nii.gz
+#[ ! -f ${standard}/${output_type}.nii.gz ] && mv ${input_type}_to_standard_nonlin.nii.gz ./${standard}/${output_type}.nii.gz
 
 # other outputs
 [ ! -d ${outdir} ] &&  mv ${tempdir}.anat ${outdir} && mv acpcmatrix ${outdir}/ && mv *.nii.gz ${outdir}/ && mv fnirt_config.cnf ${outdir}/ && mv *.txt ${outdir}/ && mv *.mat ${outdir}/
