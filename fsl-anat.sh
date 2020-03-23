@@ -38,26 +38,26 @@ nihpd_asym*)
     [ $input_type == "T2" ] && template=templates/${template}_t2w.nii
     template_mask=templates/${template}_mask.nii
     ;;
-MNI152NLin6Asym-1mm*)
-    space="MNI152NLin6Asym-1mm"
+MNI152_1mm*)
+    space="MNI152_1mm"
     [ $input_type == "T1" ] && template=templates/MNI152_T1_1mm.nii.gz
     [ $input_type == "T2" ] && template=templates/MNI152_T2_1mm.nii.gz
-    template_mask=templates/MNI152_1mm_brain_mask.nii.gz
+    template_mask=templates/MNI152_T1_1mm_brain_mask.nii.gz
     ;;
-MNI152NLin6Asym-0.7mm*)
-    space="MNI152NLin6Asym-0.7mm"
+MNI152_0.7mm*)
+    space="MNI152_0.7mm"
     [ $input_type == "T1" ] && template=templates/MNI152_T1_0.7mm.nii.gz
     [ $input_type == "T2" ] && template=templates/MNI152_T2_0.7mm.nii.gz
     template_mask=templates/MNI152_T1_0.7mm_brain_mask.nii.gz
     ;;
-MNI152NLin6Asym-0.8mm*)
-    space="MNI152NLin6Asym-0.8mm"
+MNI152_0.8mm*)
+    space="MNI152_0.8mm"
     [ $input_type == "T1" ] && template=templates/MNI152_T1_0.8mm.nii.gz
     [ $input_type == "T2" ] && template=templates/MNI152_T2_0.8mm.nii.gz
     template_mask=templates/MNI152_T1_0.8mm_brain_mask.nii.gz
     ;;
-MNI152NLin6Asym-2mm*)
-    space="MNI152NLin6Asym-0.7mm"
+MNI152_2mm*)
+    space="MNI152_2mm"
     [ $input_type == "T1" ] && template=templates/MNI152_T1_2mm.nii.gz
     [ $input_type == "T2" ] && template=templates/MNI152_T2_2mm.nii.gz
     template_mask=templates/MNI152_T1_2mm_brain_mask_dil.nii.gz
