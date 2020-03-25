@@ -71,7 +71,7 @@ sed -i "/--refmask=/s/$/${TEMPLATE}_mask_dil1/" ./fnirt_config.cnf
 
 ## run fsl_anat
 echo "running fsl_anat"
-[ -d ${tempdir}.anat ] || [ -f ${biasdir}/t1.nii.gz ] && rm -rf ${tempdir}.anat
+[ -d ${tempdir}.anat ] || [ -f ${biasdir}/t1.nii.gz ] && rm -rf ${tempdir}.anat *.nii.gz acpc/t1.nii.gz acpcmatrix standard/* standard_nonlin_warp/* *.mat *.txt
 [ -f ${biasdir}/t1.nii.gz ] && rm ${biasdir}/t1.nii.gz && rm -rf ./*.nii.gz
 [ ! -f ${tempdir}.anat/${input_type}_biascorr.nii.gz ] && fsl_anat -i ${input} \
 	--noreorient \
