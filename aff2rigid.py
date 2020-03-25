@@ -5,7 +5,7 @@
 
 import sys
 from sys import argv
-from commands import getoutput
+#from commands import getoutput
 from numpy import *
 
 # def usage():
