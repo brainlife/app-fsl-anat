@@ -96,7 +96,7 @@ echo  "flirt linear alignment"
 ## acpc align T1
 echo  "acpc alignment"
 # creating a rigid transform from linear alignment to MNI
-[ ! -f acpcmatrix ] && python \
+[ ! -f acpcmatrix ] && python3.7 \
 	./aff2rigid.py \
 	./${input_type}_to_standard_lin.mat \
 	acpcmatrix
