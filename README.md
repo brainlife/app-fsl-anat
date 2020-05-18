@@ -42,13 +42,13 @@ You can submit this App online at [https://doi.org/10.25663/brainlife.app.273](h
 ```json 
 {
    "t1":    "testdata/anat/t1.nii.gz",
-    "reorient":    true,
-    "crop":    true,
-    "bias":    true,
-    "seg":    true,
-    "subcortseg":    true,
-    "input_type":    "T1",
-    "template":    "MNI152_1mm"
+   "reorient":    true,
+   "crop":    true,
+   "bias":    true,
+   "seg":    true,
+   "subcortseg":    true,
+   "input_type":    "T1",
+   "template":    "MNI152_1mm"
 } 
 ``` 
 
