@@ -85,7 +85,7 @@ echo "running fsl_anat"
 	-o ${tempdir} \
 	--nocleanup
 
-## align T1 to template of choice
+## align input to template of choice
 # flirt
 echo  "flirt linear alignment"
 [ ! -f ${input_type}_to_standard_lin ] && flirt -interp spline \
@@ -95,7 +95,7 @@ echo  "flirt linear alignment"
 	-out ${input_type}_to_standard_lin \
 	-searchrx -30 30 -searchry -30 30 -searchrz -30 30
 
-## acpc align T1
+## acpc align input
 echo  "acpc alignment"
 # creating a rigid transform from linear alignment to MNI
 [ ! -f acpcmatrix ] && python3.7 \
@@ -156,11 +156,6 @@ echo  "compute inverse warp"
 	-w ${input_type}_to_standard_nonlin_coeff \
 	-o standard_to_${input_type}_nonlin_field
 
-## these are functions used to generate brainmask of T1, but not sure if necessary. leaving here for now
-#/opt/fsl-5.0.11/bin/applywarp --interp=nn --in=${template}_brain_mask.nii.gz --ref=./${tempdir}.anat/${input_type}_biascorr -w standard_to_${input_type}_nonlin_field -o ${input_type}_biascorr_brain_mask
-#/opt/fsl-5.0.11/bin/fslmaths T1_biascorr_brain_mask -fillh T1_biascorr_brain_mask
-#/opt/fsl-5.0.11/bin/fslmaths T1_biascorr -mas T1_biascorr_brain_mask T1_biascorr_brain
-
 ## outputs
 echo "cleanup"
 # moving warp fields from non-linear warp to warp directory
@@ -168,11 +163,8 @@ echo "cleanup"
 
 [ ! -f ${standard_nonlin_warp}/warp.nii.gz ] && mv ./${input_type}_to_standard_nonlin_field.nii.gz ./${standard_nonlin_warp}/warp.nii.gz
 
-# bias corrected image. even if not bias is set to false, this is the output we want for non-acpc aligned T1
+# bias corrected image. even if not bias is set to false, this is the output we want for non-acpc aligned input
 [ ! -f ${biasdir}/${output_type}.nii.gz ] && mv ./${tempdir}.anat/${input_type}_biascorr.nii.gz ./${biasdir}/${output_type}.nii.gz
-
-# standard T1
-#[ ! -f ${standard}/${output_type}.nii.gz ] && mv ${input_type}_to_standard_nonlin.nii.gz ./${standard}/${output_type}.nii.gz
 
 # other outputs
 [ ! -d ${outdir} ] &&  mv ${tempdir}.anat ${outdir} && mv acpcmatrix ${outdir}/ && mv *.nii.gz ${outdir}/ && mv fnirt_config.cnf ${outdir}/ && mv *.txt ${outdir}/ && mv *.mat ${outdir}/
