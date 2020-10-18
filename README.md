@@ -1,9 +1,9 @@
 [![Abcdspec-compliant](https://img.shields.io/badge/ABCD_Spec-v1.1-green.svg)](https://github.com/brain-life/abcd-spec)
 [![Run on Brainlife.io](https://img.shields.io/badge/Brainlife-brainlife.app.273-blue.svg)](https://doi.org/10.25663/brainlife.app.273)
 
-# FSL Anat (T1) 
+# FSL Anat (T1 or T2) 
 
-This app will preprocess an anatomical (T1w) image using FSL's fsl_anat functionality. Within this, it will: crop and reorient and debias the anatomical T1w image, segment cortical and subcortical structures, and linearally and non-linearally the image to a variety of templates, including the MNI template.  This app takes as input an anatomical T1w image and instructions regarding which steps to perform and the template image to use. This app will output many images, including the linearally aligned 'acpc_aligned image', the non-linearally registered 'standard' image, the debiased image used before alignment, the warps derived from the alignment, and all the derivatives generated. 
+This app will preprocess an anatomical (T1w or T2w) image using FSL's fsl_anat functionality. Within this, it will: crop and reorient and debias the anatomical image, segment cortical and subcortical structures, and linearally and non-linearally the image to a variety of templates, including the MNI template.  This app takes as input an anatomical image and instructions regarding which steps to perform and the template image to use. This app will output many images, including the linearally aligned 'acpc_aligned image', the non-linearally registered 'standard' image, the debiased image used before alignment, the warps derived from the alignment, and all the derivatives generated. 
 
 ### Authors 
 
