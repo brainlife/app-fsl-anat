@@ -81,8 +81,8 @@ The secondary output of this app is `product.json`. This file allows web interfa
 
 This App requires the following libraries when run locally. 
 
-- FSL: 
-- python2: 
-- jsonlab: 
-- numpy: 
-- singularity: 
+- FSL: https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation
+- python2: https://www.python.org/downloads/
+- jsonlab: https://github.com/fangq/jsonlab
+- numpy: https://numpy.org/install/
+- singularity: https://singularity.lbl.gov/quickstart
