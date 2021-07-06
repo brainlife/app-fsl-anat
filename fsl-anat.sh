@@ -167,7 +167,7 @@ echo "cleanup"
 [ ! -f ${biasdir}/${output_type}.nii.gz ] && mv ./${tempdir}.anat/${input_type}_biascorr.nii.gz ./${biasdir}/${output_type}.nii.gz
 
 # other outputs
-[ ! -d ${outdir} ] &&  mv ${tempdir}.anat ${outdir} && mv acpcmatrix ${outdir}/ && mv *.nii.gz ${outdir}/ && mv fnirt_config.cnf ${outdir}/ && mv *.txt ${outdir}/ && mv *.mat ${outdir}/
+[ ! -d ${outdir} ] &&  mv ${tempdir}.anat ${outdir} && mv acpcmatrix ${standard_nonlin_warp}/affine.txt && mv *.nii.gz ${outdir}/ && mv fnirt_config.cnf ${outdir}/ && mv *.txt ${outdir}/ && mv *.mat ${outdir}/
 
 ## final check and cleanup
 [ ! -f ${acpcdir}/${output_type}.nii.gz ] && echo "failed" && exit 1 || exit 0
