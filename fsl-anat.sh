@@ -34,8 +34,8 @@ done
 case $TEMPLATE in
 nihpd_asym*)
     space="NIHPD"
-    [ $input_type == "T1" ] && template=templates/${template}_t1w.nii
-    [ $input_type == "T2" ] && template=templates/${template}_t2w.nii
+    [ $input_type == "T1" ] && template=templates/${TEMPLATE}_t1w.nii
+    [ $input_type == "T2" ] && template=templates/${TEMPLATE}_t2w.nii
     template_mask=templates/${template}_mask.nii
     ;;
 MNI152_1mm)
