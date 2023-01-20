@@ -24,7 +24,7 @@ done
 
 ## set if conditions
 [[ ${input_type} == 'T1' ]] && output_type='t1' || output_type='t2'
-[[ ${reorient} ==  true ]] && fslreorient2std ${input} ./${output_type}_reorient && input=${output_type}_reorient
+[[ ${reorient} ==  true ]] && fslreorient2std -m ${output_type}_reorient.txt ${input} ./${output_type}_reorient && input=${output_type}_reorient
 [[ ${crop} == true ]] && robustfov -i ${input} -r ${output_type}_crop && input=${output_type}_crop && convert_xfm -omat ${output_type}_inverse_crop.txt -inverse ${output_type}_crop.txt
 [[ ${bias} == false ]] && l3='--nobias'
 [[ ${seg} == false ]] && l6='--noseg' || l6=''
@@ -166,8 +166,25 @@ echo "cleanup"
 # bias corrected image. even if not bias is set to false, this is the output we want for non-acpc aligned input
 [ ! -f ${biasdir}/${output_type}.nii.gz ] && mv ./${tempdir}.anat/${input_type}_biascorr.nii.gz ./${biasdir}/${output_type}.nii.gz
 
+# concatenate crop and/or reorient matrices if available
+if [ -f ${output_type}_inverse_crop.txt ] && [ ! -f ${output_type}_reorient.txt ]; then
+	convert_xfm -omat acpcmatrix_inverse_crop.txt -concat acpcmatrix ${output_type}_inverse_crop.txt
+	affine=acpcmatrix_inverse_crop.txt
+elif [ ! -f ${output_type}_inverse_crop.txt ] && [ -f ${output_type}_reorient.txt ]; then
+	convert_xfm -omat acpcmatrix_reorient.txt -concat acpcmatrix ${output_type}_reorient.txt
+	affine=acpcmatrix_reorient.txt
+elif [ -f ${output_type}_inverse_crop.txt ] && [ -f ${output_type}_reorient.txt ]; then
+	convert_xfm -omat ${output_type}_crop_reorient.txt -concat ${output_type}_inverse_crop.txt ${output_type}_reorient.txt
+	convert_xfm -omat acpcmatrix_crop_reorient.txt -concat acpcmatrix ${output_type}_crop_reorient.txt
+	affine=acpcmatrix_crop_reorient.txt
+else
+	affine=acpcmatrix
+fi
+
+mv ${affine} ${standard_nonlin_warp}/affine.txt
+
 # other outputs
-[ ! -d ${outdir} ] &&  mv ${tempdir}.anat ${outdir} && mv acpcmatrix ${standard_nonlin_warp}/affine.txt && mv *.nii.gz ${outdir}/ && mv fnirt_config.cnf ${outdir}/ && mv *.txt ${outdir}/ && mv *.mat ${outdir}/
+[ ! -d ${outdir} ] &&  mv ${tempdir}.anat ${outdir} && mv *.nii.gz ${outdir}/ && mv fnirt_config.cnf ${outdir}/ && mv *.txt ${outdir}/ && mv *.mat ${outdir}/
 
 ## final check and cleanup
 [ ! -f ${acpcdir}/${output_type}.nii.gz ] && echo "failed" && exit 1 || exit 0
