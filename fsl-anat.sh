@@ -23,8 +23,6 @@ do
 done
 
 ## set if conditions
-fslreorient2std -m reorient.txt ${input} ./${output_type}_reorient.nii.gz
-
 [[ ${input_type} == 'T1' ]] && output_type='t1' || output_type='t2'
 [[ ${reorient} ==  true ]] && fslreorient2std -m ${output_type}_reorient.txt ${input} ./${output_type}_reorient && input=${output_type}_reorient
 [[ ${crop} == true ]] && robustfov -m ${output_type}_crop.txt -i ${input} -r ${output_type}_crop && input=${output_type}_crop && convert_xfm -omat ${output_type}_inverse_crop.txt -inverse ${output_type}_crop.txt
