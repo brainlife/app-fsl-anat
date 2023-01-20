@@ -25,7 +25,7 @@ done
 ## set if conditions
 [[ ${input_type} == 'T1' ]] && output_type='t1' || output_type='t2'
 [[ ${reorient} ==  true ]] && fslreorient2std -m ${output_type}_reorient.txt ${input} ./${output_type}_reorient && input=${output_type}_reorient
-[[ ${crop} == true ]] && robustfov -i ${input} -r ${output_type}_crop && input=${output_type}_crop && convert_xfm -omat ${output_type}_inverse_crop.txt -inverse ${output_type}_crop.txt
+[[ ${crop} == true ]] && robustfov -m ${output_type}_crop.txt -i ${input} -r ${output_type}_crop && input=${output_type}_crop && convert_xfm -omat ${output_type}_inverse_crop.txt -inverse ${output_type}_crop.txt
 [[ ${bias} == false ]] && l3='--nobias'
 [[ ${seg} == false ]] && l6='--noseg' || l6=''
 [[ ${subcortseg} == false ]] && l7='--nosubcortseg' || l7=''
@@ -71,7 +71,7 @@ sed -i "/--refmask=/s/$/${TEMPLATE}_mask_dil1/" ./fnirt_config.cnf
 
 ## run fsl_anat
 echo "running fsl_anat"
-[ -d ${tempdir}.anat ] || [ -f ${biasdir}/${output_type}.nii.gz ] && rm -rf ${tempdir}.anat acpc/${output_type}.nii.gz acpcmatrix standard/* standard_nonlin_warp/* *.mat *.txt
+[ -d ${tempdir}.anat ] || [ -f ${biasdir}/${output_type}.nii.gz ] && rm -rf ${tempdir}.anat acpc/${output_type}.nii.gz acpcmatrix standard/* standard_nonlin_warp/* *.mat
 [ -f ${biasdir}/${output_type}.nii.gz ] && rm ${biasdir}/${output_type}.nii.gz ${input_type}_to*
 [ ! -f ${tempdir}.anat/${input_type}_biascorr.nii.gz ] && fsl_anat -i ${input} \
 	--noreorient \
