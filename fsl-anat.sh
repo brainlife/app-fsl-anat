@@ -23,6 +23,8 @@ do
 done
 
 ## set if conditions
+fslreorient2std -m reorient.txt ${input} ./${output_type}_reorient.nii.gz
+
 [[ ${input_type} == 'T1' ]] && output_type='t1' || output_type='t2'
 [[ ${reorient} ==  true ]] && fslreorient2std -m ${output_type}_reorient.txt ${input} ./${output_type}_reorient && input=${output_type}_reorient
 [[ ${crop} == true ]] && robustfov -m ${output_type}_crop.txt -i ${input} -r ${output_type}_crop && input=${output_type}_crop && convert_xfm -omat ${output_type}_inverse_crop.txt -inverse ${output_type}_crop.txt
@@ -98,7 +100,7 @@ echo  "flirt linear alignment"
 ## acpc align input
 echo  "acpc alignment"
 # creating a rigid transform from linear alignment to MNI
-[ ! -f acpcmatrix ] && python3.7 \
+[ ! -f acpcmatrix ] && python \
 	./aff2rigid.py \
 	./${input_type}_to_standard_lin.mat \
 	acpcmatrix
