@@ -25,7 +25,7 @@ done
 ## set if conditions
 [[ ${input_type} == 'T1' ]] && output_type='t1' || output_type='t2'
 [[ ${reorient} ==  true ]] && fslreorient2std ${input} ./${output_type}_reorient && input=${output_type}_reorient
-[[ ${crop} == true ]] && robustfov -i ${input} -r ${output_type}_crop && input=${output_type}_crop
+[[ ${crop} == true ]] && robustfov -i ${input} -r ${output_type}_crop && input=${output_type}_crop && convert_xfm -omat ${output_type}_inverse_crop.txt -inverse ${output_type}_crop.txt
 [[ ${bias} == false ]] && l3='--nobias'
 [[ ${seg} == false ]] && l6='--noseg' || l6=''
 [[ ${subcortseg} == false ]] && l7='--nosubcortseg' || l7=''
