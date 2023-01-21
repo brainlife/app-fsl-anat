@@ -13,11 +13,12 @@ tempdir='tmp'
 standard='standard'
 acpcdir='acpc'
 standard_nonlin_warp='standard_nonlin_warp'
+standard_non_warp_input='standard_nonlin_warp_input'
 biasdir='bias'
 outdir='raw'
 
 ## making output directories
-for DIRS in ${standard} ${biasdir} ${acpcdir} ${standard_nonlin_warp}
+for DIRS in ${standard} ${biasdir} ${acpcdir} ${standard_nonlin_warp} ${standard_non_warp_input}
 do
 	mkdir ${DIRS}
 done
@@ -159,12 +160,17 @@ echo  "compute inverse warp"
 ## outputs
 echo "cleanup"
 # moving warp fields from non-linear warp to warp directory
-[ ! -f ${standard_nonlin_warp}/inverse-warp.nii.gz ] && mv ./standard_to_${input_type}_nonlin_field.nii.gz ./${standard_nonlin_warp}/inverse-warp.nii.gz
+[ ! -f ${standard_nonlin_warp}/inverse-warp.nii.gz ] && cp ./standard_to_${input_type}_nonlin_field.nii.gz ./${standard_nonlin_warp}/inverse-warp.nii.gz
+[ ! -f ${standard_nonlin_warp_input}/inverse-warp.nii.gz ] && mv ./standard_to_${input_type}_nonlin_field.nii.gz ./${standard_nonlin_warp_input}/inverse-warp.nii.gz
 
-[ ! -f ${standard_nonlin_warp}/warp.nii.gz ] && mv ./${input_type}_to_standard_nonlin_field.nii.gz ./${standard_nonlin_warp}/warp.nii.gz
+[ ! -f ${standard_nonlin_warp}/warp.nii.gz ] && cp ./${input_type}_to_standard_nonlin_field.nii.gz ./${standard_nonlin_warp}/warp.nii.gz
+[ ! -f ${standard_nonlin_warp_input}/warp.nii.gz ] && mv ./${input_type}_to_standard_nonlin_field.nii.gz ./${standard_nonlin_warp_input}/warp.nii.gz
 
 # bias corrected image. even if not bias is set to false, this is the output we want for non-acpc aligned input
 [ ! -f ${biasdir}/${output_type}.nii.gz ] && mv ./${tempdir}.anat/${input_type}_biascorr.nii.gz ./${biasdir}/${output_type}.nii.gz
+
+# copy over the acpc_to_standard affine
+[ ! -f ${standard_nonlin_warp}/affine.txt ] && cp acpcmatrix ./${standard_nonlin_warp}/affine.txt
 
 # concatenate crop and/or reorient matrices if available
 if [ -f ${output_type}_inverse_crop.txt ] && [ ! -f ${output_type}_reorient.txt ]; then
@@ -181,7 +187,8 @@ else
 	affine=acpcmatrix
 fi
 
-mv ${affine} ${standard_nonlin_warp}/affine.txt
+# move final affine to input transform folder
+mv ${affine} ${standard_nonlin_warp_input}/affine.txt
 
 # other outputs
 [ ! -d ${outdir} ] &&  mv ${tempdir}.anat ${outdir} && mv *.nii.gz ${outdir}/ && mv fnirt_config.cnf ${outdir}/ && mv *.txt ${outdir}/ && mv *.mat ${outdir}/
