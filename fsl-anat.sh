@@ -18,7 +18,7 @@ biasdir='bias'
 outdir='raw'
 
 ## making output directories
-for DIRS in ${standard} ${biasdir} ${acpcdir} ${standard_nonlin_warp} ${standard_non_warp_input}
+for DIRS in ${standard} ${biasdir} ${acpcdir} ${standard_nonlin_warp} ${standard_nonlin_warp_input}
 do
 	mkdir ${DIRS}
 done
