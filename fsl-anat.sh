@@ -13,7 +13,7 @@ tempdir='tmp'
 standard='standard'
 acpcdir='acpc'
 standard_nonlin_warp='standard_nonlin_warp'
-standard_non_warp_input='standard_nonlin_warp_input'
+standard_nonlin_warp_input='standard_nonlin_warp_input'
 biasdir='bias'
 outdir='raw'
 
