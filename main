@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l nodes=1:ppn=1,walltime=4:30:00
+#PBS -l nodes=1:ppn=1,walltime=7:30:00
 #PBS -N fsl_anat
 #PBS -l vmem=30gb
 #PBS -V
