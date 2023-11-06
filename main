@@ -1,7 +1,6 @@
 #!/bin/bash
 #PBS -l nodes=1:ppn=1,walltime=7:30:00
 #PBS -N fsl_anat
-#PBS -l vmem=30gb
 #PBS -V
 
 time singularity exec -e docker://brainlife/fsl:6.0.4-patched2 ./fsl-anat.sh
